@@ -4,13 +4,7 @@ import os
 import json
 import csv
 import asyncio
-import base64
 from pathlib import Path
-from email.mime.text import MIMEText
-from google.oauth2.credentials import Credentials
-from google_auth_oauthlib.flow import InstalledAppFlow
-from google.auth.transport.requests import Request
-from googleapiclient.discovery import build
 from dotenv import load_dotenv
 
 # Load environment variables from .env file
@@ -18,7 +12,7 @@ load_dotenv()
 
 class JobEmailGenerator:
     def __init__(self, your_name: str, your_role: Optional[str] = None, your_background: Optional[str] = None, 
-                 gemini_api_key: Optional[str] = None, credentials_path: Optional[str] = None):
+                 resume_text: Optional[str] = None, gemini_api_key: Optional[str] = None):
         """
         Initialize the JobEmailGenerator.
         
@@ -26,15 +20,17 @@ class JobEmailGenerator:
             your_name: Your full name
             your_role: Your current professional role
             your_background: Brief description of your professional background
+            resume_text: Full text content of your resume
             gemini_api_key: API key for Gemini (optional if in .env)
-            credentials_path: Path to the Gmail API credentials file (optional if in .env)
         """
         print(f"\n[INIT] Initializing JobEmailGenerator for {your_name}")
         self.your_name = your_name
         self.your_role = your_role or "Professional"
         self.your_background = your_background
+        self.resume_text = resume_text
         print(f"[INIT] Role: {self.your_role}")
         print(f"[INIT] Background provided: {'Yes' if your_background else 'No'}")
+        print(f"[INIT] Resume text provided: {'Yes' if resume_text else 'No'}")
         
         # Configure Gemini API
         print("[INIT] Setting up Gemini API...")
@@ -47,16 +43,6 @@ class JobEmailGenerator:
         genai.configure(api_key=api_key)
         self.model = genai.GenerativeModel('gemini-2.5-flash')
         print("[INIT] Successfully initialized Gemini model")
-
-        # Set up Gmail API credentials path
-        self.credentials_path = credentials_path or os.getenv('GMAIL_CREDENTIALS_PATH')
-        if not self.credentials_path:
-            print("[WARNING] No Gmail credentials path provided. Email drafts cannot be created.")
-        elif not os.path.exists(self.credentials_path):
-            print(f"[WARNING] Gmail credentials file not found at {self.credentials_path}")
-        
-        self.gmail_service = None
-        self.token_path = "token.json"  # Path to store the Gmail API token
 
     def _create_prompt(self, job_details: Dict[str, str]) -> str:
         """Create a detailed prompt for Gemini to generate the email."""
@@ -73,6 +59,9 @@ class JobEmailGenerator:
         - Name: {self.your_name}
         - Current Role: {self.your_role}
         - Professional Background: {self.your_background or 'relevant experience'}
+
+        Detailed Resume:
+        {self.resume_text if self.resume_text else "No detailed resume provided"}
 
         About the Job:
         - Company: {job_details.get('company_name', 'the company')}
@@ -201,7 +190,7 @@ Best regards,
                 reader = csv.DictReader(file)
                 
                 # Validate CSV headers
-                required_fields = {'company_name', 'job_role', 'employer_name', 'employer_role', 'role_details'}
+                required_fields = {'company_name', 'job_role', 'employer_name', 'employer_role', 'role_details', 'email_id'}
                 missing_fields = required_fields - set(reader.fieldnames)
                 if missing_fields:
                     raise ValueError(f"Missing required columns in CSV: {', '.join(missing_fields)}")
@@ -214,7 +203,8 @@ Best regards,
                         generated_emails.append({
                             'company': row['company_name'],
                             'position': row['job_role'],
-                            'email': email
+                            'email': email,
+                            'email_id': row['email_id']  # Include the email ID from CSV
                         })
                         print(f"[CSV] Successfully generated email for {row['company_name']}")
                     except Exception as e:
@@ -249,6 +239,7 @@ Best regards,
 
             try:
                 with open(file_path, 'w', encoding='utf-8') as f:
+                    f.write(f"To: {email_data['email_id']}\n")  # Add recipient email
                     f.write(f"Subject: {email_data['email']['subject']}\n\n")
                     f.write(email_data['email']['body'])
                 print(f"[SAVE] Saved email for {company} to: {filename}")
@@ -256,88 +247,5 @@ Best regards,
                 print(f"[ERROR] Failed to save email for {company}: {e}")
 
         print(f"\n[SAVE] Successfully saved {len(emails)} emails to {output_dir}")
-
-    def _get_gmail_service(self):
-        """Initialize the Gmail API service."""
-        if self.gmail_service:
-            return self.gmail_service
-
-        if not self.credentials_path:
-            raise ValueError("Gmail credentials path not set")
-
-        creds = None
-        if os.path.exists(self.token_path):
-            creds = Credentials.from_authorized_user_file(self.token_path, ['https://www.googleapis.com/auth/gmail.modify'])
-        
-        if not creds or not creds.valid:
-            if creds and creds.expired and creds.refresh_token:
-                creds.refresh(Request())
-            else:
-                flow = InstalledAppFlow.from_client_secrets_file(self.credentials_path, ['https://www.googleapis.com/auth/gmail.modify'])
-                creds = flow.run_local_server(port=0)
-            
-            with open(self.token_path, 'w') as token:
-                token.write(creds.to_json())
-
-        self.gmail_service = build('gmail', 'v1', credentials=creds)
-        return self.gmail_service
-
-    def _create_message(self, to_email: str, subject: str, body: str) -> dict:
-        """Create a message for an email."""
-        message = MIMEText(body)
-        message['to'] = to_email
-        message['from'] = 'me'
-        message['subject'] = subject
-        
-        raw = base64.urlsafe_b64encode(message.as_bytes())
-        return {'raw': raw.decode('utf-8')}
-
-    async def create_draft(self, email_content: Dict[str, str], to_email: str) -> str:
-        """
-        Create a draft email using Gmail API.
-
-        Args:
-            email_content: Dictionary with 'subject' and 'body' keys
-            to_email: Email address where the draft should be created
-
-        Returns:
-            Draft ID if successful
-        """
-        try:
-            service = self._get_gmail_service()
-            message = self._create_message(to_email, email_content['subject'], email_content['body'])
-            draft = service.users().drafts().create(userId='me', body={'message': message}).execute()
-            print(f"[GMAIL] Created draft with ID: {draft['id']} for {to_email}")
-            return draft['id']
-        except Exception as e:
-            print(f"[ERROR] Failed to create draft: {str(e)}")
-            raise
-
-    async def create_drafts_from_csv(self, csv_file_path: str, to_email: str) -> List[str]:
-        """
-        Process CSV file and create draft emails in the specified Gmail account.
-
-        Args:
-            csv_file_path: Path to the CSV file with job details
-            to_email: Email address where drafts should be created
-
-        Returns:
-            List of created draft IDs
-        """
-        print(f"\n[GMAIL] Creating drafts for {to_email}")
-        emails = await self.process_csv_file(csv_file_path)
-        draft_ids = []
-
-        for email_data in emails:
-            try:
-                draft_id = await self.create_draft(email_data['email'], to_email)
-                draft_ids.append(draft_id)
-                print(f"[GMAIL] Created draft for {email_data['company']} position: {email_data['position']}")
-            except Exception as e:
-                print(f"[ERROR] Failed to create draft for {email_data['company']}: {e}")
-                continue
-
-        print(f"\n[GMAIL] Successfully created {len(draft_ids)} draft emails in {to_email}")
-        return draft_ids
 
 
