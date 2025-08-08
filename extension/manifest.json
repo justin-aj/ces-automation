@@ -1,0 +1,20 @@
+{
+  "manifest_version": 3,
+  "name": "Job Application Data Collector",
+  "description": "Collect job application details for cold email automation",
+  "version": "1.0",
+  "permissions": ["storage", "downloads"],
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "images/icon16.png",
+      "48": "images/icon48.png",
+      "128": "images/icon128.png"
+    }
+  },
+  "icons": {
+    "16": "images/icon16.png",
+    "48": "images/icon48.png",
+    "128": "images/icon128.png"
+  }
+}
