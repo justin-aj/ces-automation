@@ -1,12 +1,14 @@
 import os
 import pickle
-import random
+import asyncio
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 from base64 import urlsafe_b64encode
 from email.mime.text import MIMEText
+from typing import List, Dict
+from job_email_generator import JobEmailGenerator
 
 # If modifying these scopes, delete the file token.pickle.
 SCOPES = ['https://www.googleapis.com/auth/gmail.compose']
@@ -35,93 +37,45 @@ def get_gmail_service():
 
     return build('gmail', 'v1', credentials=creds)
 
-def generate_personalized_content(recipient_email):
+async def save_email_drafts(job_applications: List[Dict[str, str]], email_generator: JobEmailGenerator) -> List[Dict]:
     """
-    Generate personalized content for each recipient.
-    In a real application, this would be more sophisticated.
-    """
-    templates = [
-        {
-            'subject': 'Exciting Partnership Opportunity',
-            'body': f'''Dear {recipient_email.split('@')[0]},
-
-I hope this email finds you well. I came across your profile and I'm impressed with your work.
-
-{random.choice([
-    "I believe there's potential for a valuable collaboration between us.",
-    "I wanted to discuss a possible partnership opportunity.",
-    "I think we could create something amazing together."
-])}
-
-Would you be interested in scheduling a brief call to discuss this further?
-
-Best regards,
-[Your Name]'''
-        },
-        {
-            'subject': 'Quick Question About Your Work',
-            'body': f'''Hi {recipient_email.split('@')[0]},
-
-I recently discovered your work and I'm really intrigued by what you're doing.
-
-{random.choice([
-    "Your approach to problem-solving is fascinating.",
-    "Your recent projects caught my attention.",
-    "Your expertise in the field is remarkable."
-])}
-
-I'd love to learn more about your experiences.
-
-Best,
-[Your Name]'''
-        }
-    ]
-    
-    return random.choice(templates)
-
-def create_draft_email(service, recipient_email):
-    """Create and save an email draft."""
-    content = generate_personalized_content(recipient_email)
-    
-    message = MIMEText(content['body'])
-    message['to'] = recipient_email
-    message['subject'] = content['subject']
-    
-    # Encode the message
-    encoded_message = urlsafe_b64encode(message.as_bytes()).decode()
-    
-    try:
-        draft = service.users().drafts().create(
-            userId='me',
-            body={
-                'message': {
-                    'raw': encoded_message
-                }
-            }
-        ).execute()
-        print(f'Draft created for {recipient_email}: {draft["id"]}')
-        return draft
-    except Exception as e:
-        print(f'An error occurred: {e}')
-        return None
-
-def save_email_drafts(email_list):
-    """
-    Save personalized email drafts for a list of recipients.
+    Save personalized cold email drafts for job applications.
     
     Args:
-        email_list (list): List of recipient email addresses
+        job_applications: List of dictionaries containing job application details
+        email_generator: Instance of JobEmailGenerator to create personalized emails
     """
     try:
         # Get Gmail service
         service = get_gmail_service()
         
-        # Create drafts for each recipient
+        # Create drafts for each application
         drafts = []
-        for email in email_list:
-            draft = create_draft_email(service, email)
-            if draft:
+        for job in job_applications:
+            try:
+                # Generate the email content using Gemini
+                email_content = await email_generator.generate_cold_email(job)
+                
+                # Create the draft
+                message = MIMEText(email_content['body'])
+                message['to'] = job['email']
+                message['subject'] = email_content['subject']
+                
+                # Encode the message
+                encoded_message = urlsafe_b64encode(message.as_bytes()).decode()
+                
+                draft = service.users().drafts().create(
+                    userId='me',
+                    body={
+                        'message': {
+                            'raw': encoded_message
+                        }
+                    }
+                ).execute()
+                print(f'Draft created for {job["company_name"]}: {draft["id"]}')
                 drafts.append(draft)
+            except Exception as e:
+                print(f'Failed to create draft for {job["company_name"]}: {e}')
         
         return drafts
     
@@ -129,13 +83,30 @@ def save_email_drafts(email_list):
         print(f'Failed to save drafts: {e}')
         return []
 
-if __name__ == '__main__':
-    # Example usage
-    test_emails = [
-        'test1@example.com',
-        'test2@example.com',
-        'test3@example.com'
-    ]
+async def main():
+    # Create an email generator instance
+    email_generator = JobEmailGenerator(
+        your_name="Your Name",
+        your_role="Software Engineer",
+        your_background="5 years of experience in full-stack development"  # API key will be loaded from .env file
+    )
     
-    drafts = save_email_drafts(test_emails)
+    # Example job application
+    job_application = {
+        'email': 'hiring.manager@company.com',
+        'employer_name': 'John Smith',
+        'employer_role': 'Engineering Manager',
+        'company_name': 'Tech Corp',
+        'job_role': 'Senior Software Engineer',
+        'role_details': '''
+        • 5+ years of experience in Python development
+        • Experience with cloud services (AWS/GCP)
+        • Strong background in API design and microservices
+        '''
+    }
+    
+    drafts = await save_email_drafts([job_application], email_generator)
     print(f'Successfully created {len(drafts)} drafts')
+
+if __name__ == '__main__':
+    asyncio.run(main())
