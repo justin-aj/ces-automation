@@ -51,7 +51,7 @@ class JobEmailGenerator:
         Make sure it is catchy and to the point. Do not invent or assume any qualifications or experiences not explicitly mentioned in the information provided.
         Return ONLY a JSON object with 'subject' and 'body' keys, following this exact format:
         {{
-            "subject": "Direct subject line highlighting key skill match (1-min read)",
+            "subject": "Direct subject line highlighting key skill match",
             "body": "Hi {job_details.get('employer_name', 'Hiring Manager')},\\n\\nConcise email content focusing on relevant skills\\n\\nBrief, clear paragraphs\\n\\nBest regards,\\n{self.your_name}"
         }}
 
@@ -78,34 +78,28 @@ class JobEmailGenerator:
         3. SPECIFICS - Use ONLY verifiable numbers and examples provided in the candidate information
         4. DIRECT TONE - Professional and straightforward, no unnecessary praise or flattery
         5. CLEAR FORMAT - Short paragraphs, bullet points for skills if appropriate
-        6. READ TIME - Subject line must include "(1-min read)" exactly as written
-        7. FORMAT - Must start with "Hi [Name]," and end with either "Best regards," or "Sincerely," followed by name
-        8. MANDATORY CLOSING - Every email MUST end with exactly these two sentences:
-           - "I'd welcome the opportunity for a brief call to discuss the role in more detail."
-           - "If you're not the designated hiring manager for this role, could you please connect me with the appropriate hiring manager or HR?"
+        6. FORMAT - Must start with "Hi [Name]," and end with either "Best regards," or "Sincerely," followed by name
+        7. MANDATORY CLOSING - Every email MUST end with exactly this sentence:
+           - "I would greatly appreciate the opportunity for a brief call to discuss the role in more detail. If you are not the designated hiring manager for this position, I would be grateful if you could kindly connect me with the appropriate hiring manager or HR representative."
 
         Structure:
-        - Greeting: Must start with "Hi [Name]," (use exact name provided in contact information)
-        - First Line: State the exact position name and ONE most relevant qualification (must be from provided information)
-        - Body: List ONLY 2-3 specific achievements or skills that are EXPLICITLY mentioned in the candidate information
-        - Close: Use EXACTLY these two closing sentences without modification:
-          * "I'd welcome the opportunity for a brief call to discuss the role in more detail."
-          * "If you're not the designated hiring manager for this role, could you please connect me with the appropriate hiring manager or HR?"
-        - Signature: Must end with "Best regards," or "Sincerely," followed by the exact candidate name on a new line
+        - Greeting: Must start with "Hi [Name]," (use exact name provided in contact information).
+        - First Line: State the exact position name and ONE most relevant qualification (must be from provided information), phrased in a compelling and engaging way to capture attention.
+        - Body: Write a concise, engaging narrative that demonstrates how the candidate's past work directly matches the responsibilities and skills outlined in the job description. Highlight ONLY 2-3 specific achievements or experiences from the candidate information that are clearly relevant to the job description, showing impact, measurable results, or close parallels to the role's core expectations. Avoid generic skills focus on alignment and proof.
+        - Close: Use EXACTLY this closing sentence without modification:
+                "I would greatly appreciate the opportunity for a brief call to discuss the role in more detail. If you are not the designated hiring manager for this position, I would be grateful if you could kindly connect me with the appropriate hiring manager or HR representative."
+        - Signature: Must end with "Best regards," or "Sincerely," followed by the exact candidate name on a new line.
         
         Key Points:
         1. DO NOT invent or assume ANY skills, experiences, or achievements not explicitly stated in the provided information
         2. NO company praise or statements about being passionate/excited
         3. ONLY mention skills/achievements that are EXPLICITLY provided in the candidate information or resume text
         4. Use EXACTLY ONE of these closing sentences without modification:
-           * "I'd welcome the opportunity for a brief call to discuss the role in more detail."
-           * "If you're not the designated hiring manager for this role, could you please connect me with the appropriate hiring manager or HR?"
-        5. Subject line MUST include "(1-min read)" exactly as written
-        6. Use simple, clear language and avoid technical jargon unless it appears in the job requirements
-        7. Limit paragraphs to 1-2 sentences for easy scanning
-        8. Do NOT mention or imply any information that isn't explicitly provided
+                "I would greatly appreciate the opportunity for a brief call to discuss the role in more detail. If you are not the designated hiring manager for this position, I would be grateful if you could kindly connect me with the appropriate hiring manager or HR representative."
+        5. Use simple, clear language and avoid technical jargon unless it appears in the job requirements
+        6. Limit paragraphs to 1-2 sentences for easy scanning
+        7. Do NOT mention or imply any information that isn't explicitly provided
 
-        
         CRITICAL INSTRUCTION: ONLY use information explicitly provided. DO NOT invent qualifications, experiences, or achievements. When in doubt, be general rather than specific.
         
         Return ONLY the JSON object with 'subject' and 'body' keys. No fluff, just relevant qualifications and experience.
