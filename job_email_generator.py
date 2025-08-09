@@ -1,8 +1,8 @@
+import json
 from typing import Dict, Optional, List, AsyncIterator
 import google.generativeai as genai
 import os
-import json
-import csv
+
 import asyncio
 from pathlib import Path
 from dotenv import load_dotenv
@@ -46,43 +46,80 @@ class JobEmailGenerator:
 
     def _create_prompt(self, job_details: Dict[str, str]) -> str:
         """Create a detailed prompt for Gemini to generate the email."""
-        prompt = f"""You are a professional job application assistant. Generate a compelling cold email for a job application.
+        prompt = f"""You are a professional email writer crafting a concise, skill-focused cold email. 
+        Generate a direct email that clearly presents {self.your_name}'s relevant qualifications for the role. 
+        Make sure it is catchy and to the point. Do not invent or assume any qualifications or experiences not explicitly mentioned in the information provided.
         Return ONLY a JSON object with 'subject' and 'body' keys, following this exact format:
         {{
-            "subject": "Engaging subject line here",
-            "body": "Email content here\\n\\nWith proper paragraphs"
+            "subject": "Direct subject line highlighting key skill match (1-min read)",
+            "body": "Hi {job_details.get('employer_name', 'Hiring Manager')},\\n\\nConcise email content focusing on relevant skills\\n\\nBrief, clear paragraphs\\n\\nBest regards,\\n{self.your_name}"
         }}
 
-        Use these details to craft a personalized email:
-
-        About the Sender:
+        Candidate Information:
         - Name: {self.your_name}
         - Current Role: {self.your_role}
-        - Professional Background: {self.your_background or 'relevant experience'}
+        - Background: {self.your_background or 'relevant experience'}
 
-        Detailed Resume:
+        Relevant Experience:
         {self.resume_text if self.resume_text else "No detailed resume provided"}
 
-        About the Job:
+        Position Details:
+        - Role: {job_details.get('job_role', 'the position')}
         - Company: {job_details.get('company_name', 'the company')}
-        - Position: {job_details.get('job_role', 'the position')}
-        - Recipient: {job_details.get('employer_name', 'Hiring Manager')}
-        - Recipient's Role: {job_details.get('employer_role', 'Hiring Manager')}
+        - Contact: {job_details.get('employer_name', 'Hiring Manager')}
+        - Contact Role: {job_details.get('employer_role', 'Hiring Manager')}
 
-        Full Job Description:
+        Job Requirements:
         {job_details.get('role_details', 'No specific requirements provided')}
 
-        Key Instructions:
-        1. Analyze the job description and identify the most relevant aspects of the sender's background
-        2. Create natural connections between the sender's experience and job requirements
-        3. Keep the tone professional but conversational
-        4. Include a clear call to action
-        5. Keep it concise (3-4 paragraphs)
-        6. Make the subject line attention-grabbing but professional
-        7. Avoid generic phrases like "I am writing to..."
-        8. Focus on value proposition and specific relevant experience
+        Email Requirements:
+        1. BREVITY - Keep email less than 150 words total
+        2. RELEVANCE - Only mention skills and experience EXPLICITLY stated in the candidate information or resume text
+        3. SPECIFICS - Use ONLY verifiable numbers and examples provided in the candidate information
+        4. DIRECT TONE - Professional and straightforward, no unnecessary praise or flattery
+        5. CLEAR FORMAT - Short paragraphs, bullet points for skills if appropriate
+        6. READ TIME - Subject line must include "(1-min read)" exactly as written
+        7. FORMAT - Must start with "Hi [Name]," and end with either "Best regards," or "Sincerely," followed by name
+        8. MANDATORY CLOSING - Every email MUST end with exactly these two sentences:
+           - "I'd welcome the opportunity for a brief call to discuss the role in more detail."
+           - "If you're not the designated hiring manager for this role, could you please connect me with the appropriate hiring manager or HR?"
+
+        Structure:
+        - Greeting: Must start with "Hi [Name]," (use exact name provided in contact information)
+        - First Line: State the exact position name and ONE most relevant qualification (must be from provided information)
+        - Body: List ONLY 2-3 specific achievements or skills that are EXPLICITLY mentioned in the candidate information
+        - Close: Use EXACTLY these two closing sentences without modification:
+          * "I'd welcome the opportunity for a brief call to discuss the role in more detail."
+          * "If you're not the designated hiring manager for this role, could you please connect me with the appropriate hiring manager or HR?"
+        - Signature: Must end with "Best regards," or "Sincerely," followed by the exact candidate name on a new line
         
-        Remember: Return ONLY the JSON object with 'subject' and 'body' keys. No additional text or formatting."""
+        Key Points:
+        1. DO NOT invent or assume ANY skills, experiences, or achievements not explicitly stated in the provided information
+        2. NO company praise or statements about being passionate/excited
+        3. ONLY mention skills/achievements that are EXPLICITLY provided in the candidate information or resume text
+        4. Use EXACTLY ONE of these closing sentences without modification:
+           * "I'd welcome the opportunity for a brief call to discuss the role in more detail."
+           * "If you're not the designated hiring manager for this role, could you please connect me with the appropriate hiring manager or HR?"
+        5. Subject line MUST include "(1-min read)" exactly as written
+        6. Use simple, clear language and avoid technical jargon unless it appears in the job requirements
+        7. Limit paragraphs to 1-2 sentences for easy scanning
+        8. Do NOT mention or imply any information that isn't explicitly provided
+
+        
+        CRITICAL INSTRUCTION: ONLY use information explicitly provided. DO NOT invent qualifications, experiences, or achievements. When in doubt, be general rather than specific.
+        
+        Return ONLY the JSON object with 'subject' and 'body' keys. No fluff, just relevant qualifications and experience.
+        
+        General Instructions:
+        Write like a confident, clear thinking human speaking to another smart human.
+        Avoid robotic phrases like 'in today's fast-paced world', 'leveraging synergies', or 'furthermore'.
+        Skip unnecessary dashes (—), quotation marks (“”), and corporate buzzwords like 'cutting-edge', 'robust', or 'seamless experience'.
+
+        No AI tone. No fluff. No filler.
+        Use natural transitions like 'here's the thing', 'let's break it down', or 'what this really means is…'
+        Keep sentences varied in length and rhythm, like how real people speak or write.
+        Prioritize clarity, personality, and usefulness. Every sentence should feel intentional, not generated.
+        """
         return prompt
 
     async def generate_cold_email(self, job_details: Dict[str, str]) -> Dict[str, str]:
