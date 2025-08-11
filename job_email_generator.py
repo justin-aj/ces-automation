@@ -1,8 +1,14 @@
+"""
+Job Email Generator using Google's Generative AI.
+
+This module provides a class to generate personalized cold emails
+using Google's Generative AI (Gemini) based on job details and resume.
+"""
+
 import json
 from typing import Dict, Optional, List, AsyncIterator
 import google.generativeai as genai
 import os
-
 import asyncio
 from pathlib import Path
 from dotenv import load_dotenv
@@ -182,14 +188,14 @@ class JobEmailGenerator:
         
         body = f'''{greeting},
 
-I hope this email finds you well. I am writing to express my strong interest in the {job_role} position at {company_name}. As a {self.your_role} with {self.your_background or 'relevant experience'}, I was excited to learn about this opportunity.
+                    I hope this email finds you well. I am writing to express my strong interest in the {job_role} position at {company_name}. As a {self.your_role} with {self.your_background or 'relevant experience'}, I was excited to learn about this opportunity.
 
-I believe my background and skills make me an excellent candidate for this role, and I would welcome the opportunity to discuss how I can contribute to your team.
+                    I believe my background and skills make me an excellent candidate for this role, and I would welcome the opportunity to discuss how I can contribute to your team.
 
-Thank you for considering my application. I look forward to the possibility of connecting soon.
+                    Thank you for considering my application. I look forward to the possibility of connecting soon.
 
-Best regards,
-{self.your_name}'''
+                    Best regards,
+                    {self.your_name}'''
 
         subject = f"Experienced {self.your_role} interested in {job_role} position"
 
