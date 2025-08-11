@@ -16,12 +16,37 @@ This project automates the cold email process for job applications using a Dagst
 - Complete job application status tracking
 - Progress reporting and analytics
 
-## Technical Components
-- Dagster workflow engine for pipeline orchestration
-- Google Gmail API integration with OAuth2 authentication
-- Web scraping for job detail extraction
-- AI-powered email generation
-- Job status tracking system
+## Tech Stack
+
+### Core Technologies
+- **Python 3.9+**: Primary programming language
+- **Dagster**: Workflow orchestration framework for data pipelines
+- **Pandas**: Data manipulation and analytics
+- **Asyncio**: Asynchronous I/O for concurrent operations
+- **JSON/Excel**: Data storage and reporting formats
+
+### APIs and Services
+- **Gmail API**: For creating email drafts with OAuth2 authentication
+- **Google Cloud Platform**: For API authentication and credentials
+- **Gemini API**: Google's generative AI for email content creation
+- **Crawl4AI**: Headless browser API for web scraping job details
+
+### Web Scraping & Automation
+- **Playwright**: Browser automation (used by Crawl4AI)
+- **BeautifulSoup4**: HTML parsing and data extraction
+
+### Development & Deployment
+- **Python virtual environments**: Dependency isolation
+- **Git & GitHub**: Version control and code management
+- **VS Code**: Integrated development environment
+- **PowerShell**: Command-line interface for Windows
+
+### Libraries & Frameworks
+- **google-auth**: Authentication with Google services
+- **google-api-python-client**: Gmail API client
+- **python-dotenv**: Environment variable management
+- **openpyxl**: Excel file generation
+- **dataclasses**: Structured data modeling
 
 ## Required Files
 - `dagster_dir/assets.py`: Dagster workflow definition
