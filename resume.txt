@@ -1,0 +1,92 @@
+Ajin Frank Justin
+857-356-5917 | ajinfrankj@gmail.com | linkedin.com/in/ajin-frank-j | portfolio | github.com/justin-aj | HuggingFace | Open to Relocation
+
+Education
+Northeastern University – Boston, MA
+Master of Science in Data Science | GPA: 4.0/4.0 | Sep 2024 – May 2026 (Expected)
+
+Coursework: Data Mining, Machine Learning, Deep Learning, MLOps, Natural Language Processing, Data Analytics & Engineering, Data Management & Processing, Artificial General Intelligence
+
+REVA University – Bangalore, India
+Bachelor of Technology, Computer Engineering | GPA: 9.11/10 | Jun 2019 – Jul 2023
+
+Technical Skills
+Languages & Databases: Python (5 yrs, Advanced), SQL (3 yrs, Advanced), C++, C#, GoLang, PostgreSQL, MySQL, MongoDB, SparkSQL, Azure SQL, Pinecone, DuckDB, OLAP, OLTP, BigQuery
+Data Processing & Engineering: pandas, NumPy, PySpark, Spark, MapReduce, Hadoop, Hive, Kafka, Airflow, EventHubs, dbt, Delta Lake, Databricks, Apache Flink
+ML/AI & Analytics: Transformers, PyTorch, scikit-learn, TensorFlow, OpenCV, AI Agents, LSTM, LangChain, LangGraph, Diffusion Models, Hugging Face, NLP, PEFT, QLoRA, ARIMA, Prophet
+Visualization & BI Tools: Matplotlib, Seaborn, Plotly, Power BI, Tableau, Excel
+Cloud & MLOps: AWS (S3, Redshift), Azure (Data Factory, Blob Storage), GCP (BigQuery, VertexAI), Docker, Kubernetes, MLFlow, Terraform, GitHub Actions, BitBucket, Grafana
+Web Frameworks: Flask, Django, FastAPI, Streamlit, ASP.NET
+Big Data Formats: Parquet, Avro
+Methodologies: Data Modeling, Data Warehousing, Data Lakes, Scrum, Agile
+
+Experience
+Machine Learning / Data Science / Data Analytics Intern – Summer 2025
+AARP – Washington DC, USA | Jun 2025 – Present
+
+Developed scalable ML model performance monitoring dashboard in Databricks (PySpark, SQL) to process large volumes of prediction logs, tracking 10+ KPIs across 25+ production models (Logistic Regression, Random Forest, Boosting).
+
+Automated ETL workflows to ingest and aggregate model outputs, enabling real-time diagnostics and improved model governance.
+
+Conducted residual diagnostics, probability calibration, temporal performance drift analysis for 20+ production use cases.
+
+Integrated statistical thresholds for data/model drift detection, triggering automated alerts and reducing drift incidents by 40%.
+
+Delivered insights for model selection and retraining cycles, improving model stability and reducing prediction error by 20%.
+
+Graduate Research Assistant
+D'Amore-McKim School of Business, Northeastern University – Boston, USA | Jan 2025 – Apr 2025
+
+Built an NLP ETL pipeline (Airflow, RegEx, NLTK, spaCy) to preprocess 2000+ financial filings for ML and analytics workflows.
+
+Created a robust PDF/TXT parser (PyMuPDF, RegEx) to extract entities and structure financial text for compliance tracking.
+
+Benchmarked LLMs (Gemini, Claude, GPT-4) on 10-class financial classification, achieving 0.86+ F1-scores.
+
+Automated feature extraction, integrating outputs into analytics pipelines for trend analysis and reporting.
+
+Data Engineer / Data Analytics Engineer
+Dynapac, Fayat Group – Bangalore, India | Jun 2023 – Jun 2024
+
+Restructured Dyn@Lyzer's multi-join PostgreSQL telemetry GIS database into a partitioned, normalized schema.
+
+Conducted ARIMA-based time series forecasting on fuel efficiency data, improving operational ROI by 20%.
+
+Designed ETL orchestrator to process 300M+ telemetry records from 1000+ nodes, transforming raw data into JSON via Azure Durable Functions and loading into Azure Blob Storage.
+
+Built interactive Tableau & Power BI dashboards to visualize GIS patterns, operational KPIs, and fuel trends for executive decision-making.
+
+Data Analytics Intern – Mar 2023 – May 2023
+
+Developed data ingestion pipeline to transform JSON into Azure Event Hubs, implementing partition keys for parallel streaming.
+
+Projects
+AskNEU – Retrieval-Augmented Generation System | LangChain, LangGraph, Docker, Pinecone, GCP, Cohere | [link] | Jan 2025 – Apr 2025
+
+Architected RAG system with Cohere reranking and Complex Retrieval Framework (query decomposition, context unification) using GPT-4.1 and Gemini APIs.
+
+Scraped 50,000+ NEU web pages via Selenium, chunked data, embedded using LangChain, and stored in Pinecone vector DB for semantic search.
+
+Scaled with Docker, Kubernetes, Airflow DAGs, Terraform, CI/CD via GitHub Actions; monitored with Grafana.
+
+AI Banking Assistant | Transformers, PEFT, Hugging Face, PyTorch | [link] | Dec 2024 – Jan 2025
+
+Built QA and conditional text generation tasks with 25,000+ QA pairs.
+
+Fine-tuned T5-small, GPT2-small, DistilBERT via QLoRA (4-bit quantization) and benchmarked Falcon-7B.
+
+Achieved BLEU 0.25, ROUGE-1 F1 0.54 on NVIDIA V100 GPU, indicating strong text generation performance.
+
+Amazon Product Sales Analysis – Tableau Dashboard | pandas, NumPy, Tableau | Dec 2024 – Jan 2025
+
+Preprocessed and transformed 2M+ rows for KPI tracking and visualization.
+
+Forecasted sales with ARIMA & Prophet, improving accuracy by 22%; implemented customer segmentation, boosting campaign response by 20%.
+
+Identified underperforming SKUs, improving stock turnover by 15%.
+
+Food Categorization using Machine Learning | sklearn, Random Forest, TF-IDF, PCA | [link] | Oct 2024 – Dec 2024
+
+Classified USDA food products into 70+ categories with 91.98% accuracy and 91.87% F1-score on 1.7M entries.
+
+Optimized with TF-IDF vectorization, PCA, and A/B testing; derived insights for nutrition and inventory management using hypothesis testing & ANOVA.
