@@ -15,7 +15,7 @@ function showStatus(message, type) {
 }
 
 function generateCSV(entries) {
-    const headers = ['company_name', 'job_role', 'employer_name', 'employer_role', 'role_details', 'email_id'];
+    const headers = ['employer_name', 'employer_role', 'email_id', 'job_link'];
     const rows = [headers.join(',')];
 
     entries.forEach(entry => {
@@ -33,7 +33,7 @@ function generateCSV(entries) {
 }
 
 function fillForm(entry) {
-    const fields = ['company_name', 'job_role', 'employer_name', 'employer_role', 'email_id', 'role_details'];
+    const fields = ['employer_name', 'employer_role', 'email_id', 'job_link'];
     fields.forEach(id => {
         const element = document.getElementById(id);
         if (element) {
@@ -62,8 +62,11 @@ function displayEntries() {
             const entryDiv = document.createElement('div');
             entryDiv.className = 'entry-item';
             entryDiv.innerHTML = `
-                <strong>${entry.company_name}</strong> - ${entry.job_role}<br>
-                <small>${entry.employer_name} (${entry.employer_role})</small>
+                <strong>${entry.employer_name}</strong> (${entry.employer_role})<br>
+                <small>${entry.email_id}</small>
+                <div class="job-link">
+                    <small><a href="${entry.job_link}" target="_blank" title="Open job listing">${entry.job_link ? 'View Job Listing' : 'No link provided'}</a></small>
+                </div>
                 <div class="entry-actions">
                     <button class="btn-edit">Edit</button>
                     <button class="btn-delete">Delete</button>
@@ -157,12 +160,10 @@ document.addEventListener('DOMContentLoaded', function() {
         e.preventDefault();
         
         const entry = {
-            company_name: document.getElementById('company_name').value,
-            job_role: document.getElementById('job_role').value,
             employer_name: document.getElementById('employer_name').value,
             employer_role: document.getElementById('employer_role').value,
             email_id: document.getElementById('email_id').value,
-            role_details: document.getElementById('role_details').value,
+            job_link: document.getElementById('job_link').value,
             timestamp: new Date().toISOString()
         };
 
@@ -194,7 +195,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 chrome.downloads.download({
                     url: url,
-                    filename: `job_applications_${timestamp}.csv`
+                    filename: `contacts_${timestamp}.csv`
                 });
             });
         });
@@ -215,7 +216,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 const a = document.createElement('a');
                 a.href = url;
-                a.download = 'sample_jobs.csv';
+                a.download = 'contacts.csv';
                 document.body.appendChild(a);
                 a.click();
                 document.body.removeChild(a);

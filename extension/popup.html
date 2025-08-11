@@ -7,7 +7,7 @@
 <body>
     <div class="container">
         <div class="header">
-            <h2>Job Application Details</h2>
+            <h2>Contact Details Collector</h2>
             <div class="storage-info">
                 <span id="entryCount">0 entries stored</span>
                 <button type="button" class="btn-view" id="viewEntries">View Entries</button>
@@ -21,16 +21,6 @@
         </div>
 
         <form id="jobForm">
-            <div class="form-group">
-                <label for="company_name">Company Name*</label>
-                <input type="text" id="company_name" required>
-            </div>
-            
-            <div class="form-group">
-                <label for="job_role">Job Role*</label>
-                <input type="text" id="job_role" required>
-            </div>
-            
             <div class="form-group">
                 <label for="employer_name">Employer Name*</label>
                 <input type="text" id="employer_name" required>
@@ -47,15 +37,15 @@
             </div>
             
             <div class="form-group">
-                <label for="role_details">Role Details*</label>
-                <textarea id="role_details" rows="6" required></textarea>
+                <label for="job_link">Job Link*</label>
+                <input type="url" id="job_link" required placeholder="https://example.com/job">
             </div>
             
             <div class="button-group">
                 <button type="submit" class="btn-save">Save Entry</button>
                 <div class="export-group">
                     <button type="button" class="btn-download" id="downloadCSV">Download as CSV</button>
-                    <button type="button" class="btn-export" id="exportToFile">Export to sample_jobs.csv</button>
+                    <button type="button" class="btn-export" id="exportToFile">Export to contacts.csv</button>
                 </div>
                 <button type="button" class="btn-clear" id="clearData">Clear All Data</button>
             </div>
