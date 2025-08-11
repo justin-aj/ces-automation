@@ -1,14 +1,22 @@
 # Cold Email Automation Project
 
-Last Updated: August 9, 2025
+Last Updated: August 10, 2025
 
 ## Latest Updates
+
+### Major Enhancements (August 10, 2025)
+1. **Enhanced Job Detail Extraction**
+   - Improved AI prompt for job detail extraction
+   - Now extracting comprehensive technical requirements from job postings
+   - Added extraction of tech stack, qualifications, and key responsibilities
+   - Enhanced extraction of domain-specific knowledge requirements
 
 ### Major Enhancements (August 9, 2025)
 1. **Job Scraping and Information Extraction**
    - Added `job_scraper.py` to extract job details from URLs
-   - Integrated Crawl4AI API for web scraping
-   - Used Gemini AI to extract structured job data
+   - Integrated Crawl4AI AsyncWebCrawler for efficient web scraping
+   - Implemented markdown-based content extraction
+   - Used Gemini 2.5 Flash API to extract structured job data
 
 ### Major Enhancements (August 8, 2025)
 1. **AI-Powered Email Generation**
@@ -43,9 +51,16 @@ Last Updated: August 9, 2025
 - Error handling for API interactions
 
 ### Current Capabilities
-- Scrapes job details from job posting URLs
-- Extracts structured job information (title, company, description)
-- Creates personalized email drafts in Gmail
+- Scrapes job details from job posting URLs using advanced web crawling techniques
+- Extracts comprehensive job information including:
+  - Job title and company name
+  - Technical skills and tech stack requirements
+  - Required qualifications (education, experience)
+  - Key responsibilities and duties
+  - Domain-specific knowledge requirements
+  - Any unique or important requirements
+- Creates highly personalized email drafts in Gmail based on extracted job details
+- Matches resume skills to job requirements for relevant personalization
 - Supports multiple email templates
 - Personalizes recipient names from email addresses
 - Maintains OAuth tokens for persistent authentication
@@ -55,11 +70,13 @@ Last Updated: August 9, 2025
 ### Technical Components
 - Uses Google Gmail API for email integration
 - Implements OAuth2 authentication flow
-- Utilizes Crawl4AI API for web scraping
-- Leverages Gemini AI for content generation and information extraction
+- Utilizes Crawl4AI AsyncWebCrawler for efficient web scraping
+- Leverages Gemini 2.5 Flash AI for content generation and information extraction
+- Implements advanced prompt engineering for detailed job information extraction
 - Stores credentials in `token.pickle` and `credentials.json`
 - Python-based implementation with pandas for data processing
-- Asynchronous operation for improved performance
+- Fully asynchronous operation for improved performance
+- Robust error handling and fallback mechanisms
 
 ### Usage
 The script currently supports:
@@ -82,7 +99,12 @@ The script currently supports:
 
 1. **Install Dependencies**
 ```bash
-pip install google-auth-oauthlib google-auth-httplib2 google-api-python-client google.generativeai pandas python-dotenv
+pip install google-auth-oauthlib google-auth-httplib2 google-api-python-client google.generativeai pandas python-dotenv crawl4ai
+```
+
+2. **Install Playwright Browsers** (required for Crawl4AI)
+```bash
+playwright install
 ```
 
 2. **Configure API Credentials**
