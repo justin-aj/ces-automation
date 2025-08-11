@@ -7,8 +7,9 @@ from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 from base64 import urlsafe_b64encode
 from email.mime.text import MIMEText
-from typing import List, Dict
+from typing import List, Dict, Optional, Union
 from job_email_generator import JobEmailGenerator
+from job_scraper import JobScraper
 
 # If modifying these scopes, delete the file token.pickle.
 SCOPES = ['https://www.googleapis.com/auth/gmail.compose']
@@ -135,61 +136,137 @@ async def read_jobs_from_csv(csv_path: str) -> List[Dict[str, str]]:
     except Exception as e:
         raise ValueError(f"Error reading CSV file: {str(e)}")
 
+async def scrape_job_info(contacts_csv_path: str, output_dir: Optional[str] = None) -> str:
+    """
+    Scrape job information from links in a contacts CSV file.
+    
+    Args:
+        contacts_csv_path: Path to the contacts CSV file with job links
+        output_dir: Directory to save results (optional)
+        
+    Returns:
+        Path to the generated job details CSV file
+    """
+    try:
+        print(f"\n[JOB SCRAPER] Starting job scraper for: {contacts_csv_path}")
+        
+        # Initialize scraper
+        scraper = JobScraper()
+        
+        # Process the contacts CSV to extract job details
+        results_df = await scraper.process_contacts_csv(contacts_csv_path)
+        
+        # Save the results
+        save_info = scraper.save_results(results_df, output_dir)
+        
+        print(f"\n[JOB SCRAPER] Job scraping completed successfully!")
+        print(f"[JOB SCRAPER] Processed {save_info['record_count']} entries")
+        print(f"[JOB SCRAPER] Results saved to:")
+        print(f"- CSV: {save_info['csv_path']}")
+        print(f"- JSON: {save_info['json_path']}")
+        
+        return save_info['csv_path']
+    
+    except Exception as e:
+        print(f"[JOB SCRAPER] Error: {e}")
+        raise
+
 async def main():
-    # Create an email generator instance with resume
+    print("\n===== COLD EMAIL AUTOMATION SYSTEM =====\n")
+    
+    # Create resume text - you can also load this from a file
     resume_text = """Ajin Frank Justin
-857-356-5917 | ajinfrankj@gmail.com | linkedin.com/in/ajin-frank-j | portfolio | github/justin-aj | huggingface
+857-356-5917 | ajinfrankj@gmail.com | linkedin.com/in/ajin-frank-j | portfolio | github.com/justin-aj | HuggingFace | Open to Relocation
+
 Education
-Northeastern University Sep 2024 - May 2026 (Expected)
-Master of Science in Data Science GPA: 4.0/4.0
-• Coursework: Data Mining, Machine Learning, Deep Learning, MLOps, Natural Language Processing
-REVA University Jun 2019 - Jul 2023
-Bachelor of Technology, Computer Engineering GPA: 9.11/10
+Northeastern University – Boston, MA
+Master of Science in Data Science | GPA: 4.0/4.0 | Sep 2024 – May 2026 (Expected)
+
+Coursework: Data Mining, Machine Learning, Deep Learning, MLOps, Natural Language Processing, Data Analytics & Engineering, Data Management & Processing, Artificial General Intelligence
+
+REVA University – Bangalore, India
+Bachelor of Technology, Computer Engineering | GPA: 9.11/10 | Jun 2019 – Jul 2023
+
 Technical Skills
-ML/AI: Transformers, PyTorch, sklearn, OpenCV, AI Agents, LSTM, LangChain, Diffusion, LangGraph, Hugging Face
-Languages: Python (Advanced - 5yrs), SQL (Advanced - 3yrs), C#/C/C++ (Intermediate), GoLang
-Data Processing: pandas, NumPy, PySpark, MapReduce, Excel, EventHubs, Airflow, Kafka, Snowflake, Databricks, dbt
-Cloud/MLOps: Azure, AWS, GCP, VertexAI, Docker, Kubernetes, MLFlow, Terraform, GitHub Actions, BitBucket
-Visualization/Web Frameworks: Matplotlib, PowerBI, Tableau, Django, FastAPI, Flask, ASP.Net, Streamlit
-Databases: PostgreSQL, MongoDB, MySQL, SparkSQL, Azure SQL, Pinecone, OLAP, OLTP, DuckDB, BigQuery
+Languages & Databases: Python (5 yrs, Advanced), SQL (3 yrs, Advanced), C++, C#, GoLang, PostgreSQL, MySQL, MongoDB, SparkSQL, Azure SQL, Pinecone, DuckDB, OLAP, OLTP, BigQuery
+Data Processing & Engineering: pandas, NumPy, PySpark, Spark, MapReduce, Hadoop, Hive, Kafka, Airflow, EventHubs, dbt, Delta Lake, Databricks, Apache Flink
+ML/AI & Analytics: Transformers, PyTorch, scikit-learn, TensorFlow, OpenCV, AI Agents, LSTM, LangChain, LangGraph, Diffusion Models, Hugging Face, NLP, PEFT, QLoRA, ARIMA, Prophet
+Visualization & BI Tools: Matplotlib, Seaborn, Plotly, Power BI, Tableau, Excel
+Cloud & MLOps: AWS (S3, Redshift), Azure (Data Factory, Blob Storage), GCP (BigQuery, VertexAI), Docker, Kubernetes, MLFlow, Terraform, GitHub Actions, BitBucket, Grafana
+Web Frameworks: Flask, Django, FastAPI, Streamlit, ASP.NET
+Big Data Formats: Parquet, Avro
+Methodologies: Data Modeling, Data Warehousing, Data Lakes, Scrum, Agile
+
 Experience
-Data Science Intern - Summer 2025 Jun 2025 – Present
-AARP Washington DC, USA
-• Developed ML model performance monitoring dashboard in Databricks using PySpark, SQL for scalable data
-processing, tracking 10+ performance indicators across 25 production models.
-• Conducted research of historical model scores across Logistic Regression, Random Forest, Boosting models for 20+
-production use cases, focusing on residual diagnostics, probability calibration, temporal performance drift.
-• Integrated statistical-threshold for data/model drift detection, triggering alerts, reducing drift incidents by 40%.
-• Enabled informed model selection, improved model stability, achieving a 20% reduction in prediction error.
-Graduate Research Assistant Jan 2025 – Apr 2025
-D’Amore-Mckim School of Business, Northeastern University Boston, USA
-• Built an NLP ETL pipeline (RegEx, NLTK, spaCy) to preprocess 2000+ financial filings, for downstream ML.
-• Created a robust PDF/TXT parser (PyMuPDF, RegEx) to extract entities and structure financial text.
-• Benchmarked LLMs (Gemini, Claude, GPT-4) achieving 0.86+ F1 in 10-class financial classification.
-Data Engineer Jun 2023 – Jun 2024
-Dynapac, Fayat Group [Manager Recommendations] Bangalore, India
-• Restructured Dyn@Lyzer multi-join PostgreSQL telemetry database into partitioned, normalized schema.
-• Conducted time series forecasting on fuel data using ARIMA models, improving operational ROI by 20%.
-• Architected a ETL pipeline orchestrator to handle 300M+ records from 1000+ nodes, transform raw data into
-structured JSON via batch processing with Azure Durable Functions and load to Azure Blob Storage.
+Machine Learning / Data Science / Data Analytics Intern – Summer 2025
+AARP – Washington DC, USA | Jun 2025 – Present
+
+Developed scalable ML model performance monitoring dashboard in Databricks (PySpark, SQL) to process large volumes of prediction logs, tracking 10+ KPIs across 25+ production models (Logistic Regression, Random Forest, Boosting).
+
+Automated ETL workflows to ingest and aggregate model outputs, enabling real-time diagnostics and improved model governance.
+
+Conducted residual diagnostics, probability calibration, temporal performance drift analysis for 20+ production use cases.
+
+Integrated statistical thresholds for data/model drift detection, triggering automated alerts and reducing drift incidents by 40%.
+
+Delivered insights for model selection and retraining cycles, improving model stability and reducing prediction error by 20%.
+
+Graduate Research Assistant
+D’Amore-McKim School of Business, Northeastern University – Boston, USA | Jan 2025 – Apr 2025
+
+Built an NLP ETL pipeline (Airflow, RegEx, NLTK, spaCy) to preprocess 2000+ financial filings for ML and analytics workflows.
+
+Created a robust PDF/TXT parser (PyMuPDF, RegEx) to extract entities and structure financial text for compliance tracking.
+
+Benchmarked LLMs (Gemini, Claude, GPT-4) on 10-class financial classification, achieving 0.86+ F1-scores.
+
+Automated feature extraction, integrating outputs into analytics pipelines for trend analysis and reporting.
+
+Data Engineer / Data Analytics Engineer
+Dynapac, Fayat Group – Bangalore, India | Jun 2023 – Jun 2024
+
+Restructured Dyn@Lyzer’s multi-join PostgreSQL telemetry GIS database into a partitioned, normalized schema.
+
+Conducted ARIMA-based time series forecasting on fuel efficiency data, improving operational ROI by 20%.
+
+Designed ETL orchestrator to process 300M+ telemetry records from 1000+ nodes, transforming raw data into JSON via Azure Durable Functions and loading into Azure Blob Storage.
+
+Built interactive Tableau & Power BI dashboards to visualize GIS patterns, operational KPIs, and fuel trends for executive decision-making.
+
+Data Analytics Intern – Mar 2023 – May 2023
+
+Developed data ingestion pipeline to transform JSON into Azure Event Hubs, implementing partition keys for parallel streaming.
+
 Projects
-AskNEU RAG System | RAG, LangChain, Docker, Pinecone, GCP [link] Jan 2025 – Apr 2025
-• Architected RAG system with Cohere reranking, direct and Complex Retrieval Framework of documents with
-query decomposition, context unification using GPT-4.1, Gemini 2.0 APIs and LangGraph for workflow.
-• Engineered automated data pipeline to scrape 50,000+ NEU sites using Selenium, chunking, ingest embeddings
-into Pinecone vector database with LangChain wrappers to support semantic search enabled knowledge base.
-• Ensured scalability with Docker containers, orchestrating ETL data pipeline(Airflow DAGs), GitHub Actions for
-CI/CD, leveraging Kubernetes clusters with terraform for automated deployment, Grafana for monitoring.
-AI Banking Assistant | transformers, peft, huggingface, pytorch [link] Dec 2024 – Jan 2025
-• Architected question answering and conditional generation tasks, processing 25000+ QA pairs.
-• Fine-tuned T5-small, GPT2-small, DistilBERT using PEFT(QLoRA) with 4-bit quantization.
-• Achieved a BLEU score of 0.25 and ROUGE-1 F1 score of 0.54 indicating strong model performance in text
-generation tasks by fine-tuning and benchmarking a Falcon-7B-based model on NVIDIA v100 GPU CUDA.
-Food Categorization using Machine Learning | sklearn, Random Forest [link] Oct 2024 – Dec 2024
-• Developed an automated machine learning system to categorize food products using data from the USDA.
-• Applied Logistic Regression and Random Forest, achieving 91.98% accuracy, 91.87% F1-Score on 1.7M entries.
-Enhanced performance through TF-IDF vectorization, PCA dimensionality reduction, A/B testing.
-• Derived statistical insights for nutrition, inventory management, leveraging hypothesis testing, ANOVA.
+AskNEU – Retrieval-Augmented Generation System | LangChain, LangGraph, Docker, Pinecone, GCP, Cohere | [link] | Jan 2025 – Apr 2025
+
+Architected RAG system with Cohere reranking and Complex Retrieval Framework (query decomposition, context unification) using GPT-4.1 and Gemini APIs.
+
+Scraped 50,000+ NEU web pages via Selenium, chunked data, embedded using LangChain, and stored in Pinecone vector DB for semantic search.
+
+Scaled with Docker, Kubernetes, Airflow DAGs, Terraform, CI/CD via GitHub Actions; monitored with Grafana.
+
+AI Banking Assistant | Transformers, PEFT, Hugging Face, PyTorch | [link] | Dec 2024 – Jan 2025
+
+Built QA and conditional text generation tasks with 25,000+ QA pairs.
+
+Fine-tuned T5-small, GPT2-small, DistilBERT via QLoRA (4-bit quantization) and benchmarked Falcon-7B.
+
+Achieved BLEU 0.25, ROUGE-1 F1 0.54 on NVIDIA V100 GPU, indicating strong text generation performance.
+
+Amazon Product Sales Analysis – Tableau Dashboard | pandas, NumPy, Tableau | Dec 2024 – Jan 2025
+
+Preprocessed and transformed 2M+ rows for KPI tracking and visualization.
+
+Forecasted sales with ARIMA & Prophet, improving accuracy by 22%; implemented customer segmentation, boosting campaign response by 20%.
+
+Identified underperforming SKUs, improving stock turnover by 15%.
+
+Food Categorization using Machine Learning | sklearn, Random Forest, TF-IDF, PCA | [link] | Oct 2024 – Dec 2024
+
+Classified USDA food products into 70+ categories with 91.98% accuracy and 91.87% F1-score on 1.7M entries.
+
+Optimized with TF-IDF vectorization, PCA, and A/B testing; derived insights for nutrition and inventory management using hypothesis testing & ANOVA.
 """  # Replace with your actual resume text
 
     email_generator = JobEmailGenerator(
@@ -198,29 +275,93 @@ Enhanced performance through TF-IDF vectorization, PCA dimensionality reduction,
         resume_text=resume_text  # Now passing the full resume text
     )
     
-    # Read jobs from CSV file
-    try:
-        jobs = await read_jobs_from_csv('sample_jobs.csv')
-        print(f"Found {len(jobs)} job applications in CSV file")
+    # Main menu
+    while True:
+        print("\nChoose an option:")
+        print("1. Scrape job information from contacts CSV")
+        print("2. Generate email drafts from job details CSV")
+        print("3. Do both (Scrape jobs and generate emails)")
+        print("4. Exit")
         
-        # Generate and save email drafts for all jobs
-        drafts = await save_email_drafts(jobs, email_generator)
-        print(f'Successfully created {len(drafts)} email drafts')
+        choice = input("\nEnter your choice (1-4): ").strip()
         
-        # Print details of created drafts
-        for i, (job, draft) in enumerate(zip(jobs, drafts), 1):
-            print(f"\nDraft {i}:")
-            print(f"Company: {job['company_name']}")
-            print(f"Position: {job['job_role']}")
-            print(f"Draft ID: {draft['id']}")
+        if choice == '1':
+            # Scrape job information
+            contacts_csv = "contacts.csv"  # Default name
+                
+            output_dir = input("Enter output directory (leave empty for current directory): ").strip()
             
-    except FileNotFoundError:
-        print("Error: sample_jobs.csv file not found. Please create it with the required columns:")
-        print("company_name, job_role, employer_name, employer_role, role_details, email_id")
-    except ValueError as e:
-        print(f"Error with CSV file: {e}")
-    except Exception as e:
-        print(f"An error occurred: {e}")
+            try:
+                job_details_csv = await scrape_job_info(contacts_csv, output_dir)
+                print(f"\nJob details saved to: {job_details_csv}")
+            except Exception as e:
+                print(f"\nError during job scraping: {e}")
+            
+        elif choice == '2':
+            # Generate email drafts
+            job_details_csv = input("\nEnter path to job details CSV file: ").strip()
+            if not job_details_csv:
+                job_details_csv = "job_details.csv"  # Default name
+            
+            try:
+                jobs = await read_jobs_from_csv(job_details_csv)
+                print(f"\nFound {len(jobs)} job applications in CSV file")
+                
+                # Generate and save email drafts
+                drafts = await save_email_drafts(jobs, email_generator)
+                print(f'\nSuccessfully created {len(drafts)} email drafts')
+                
+                # Print details of created drafts
+                for i, (job, draft) in enumerate(zip(jobs, drafts), 1):
+                    print(f"\nDraft {i}:")
+                    print(f"Company: {job.get('company_name', 'Unknown')}")
+                    print(f"Position: {job.get('job_name', job.get('job_role', 'Unknown'))}")
+                    print(f"Draft ID: {draft['id']}")
+                    
+            except FileNotFoundError:
+                print(f"\nError: {job_details_csv} file not found.")
+            except ValueError as e:
+                print(f"\nError with CSV file: {e}")
+            except Exception as e:
+                print(f"\nAn error occurred: {e}")
+        
+        elif choice == '3':
+            # Do both: scrape and generate emails
+            contacts_csv = "contacts.csv"  # Default name
+                
+            output_dir = input("Enter output directory (leave empty for current directory): ").strip()
+            
+            try:
+                # First scrape job information
+                job_details_csv = await scrape_job_info(contacts_csv, output_dir)
+                print(f"\nJob details saved to: {job_details_csv}")
+                
+                # Then generate emails
+                jobs = await read_jobs_from_csv(job_details_csv)
+                print(f"\nFound {len(jobs)} job applications in CSV file")
+                
+                # Generate and save email drafts
+                drafts = await save_email_drafts(jobs, email_generator)
+                print(f'\nSuccessfully created {len(drafts)} email drafts')
+                
+                # Print details of created drafts
+                for i, (job, draft) in enumerate(zip(jobs, drafts), 1):
+                    print(f"\nDraft {i}:")
+                    print(f"Company: {job.get('company_name', 'Unknown')}")
+                    print(f"Position: {job.get('job_name', job.get('job_role', 'Unknown'))}")
+                    print(f"Draft ID: {draft['id']}")
+                    
+            except Exception as e:
+                print(f"\nError during processing: {e}")
+        
+        elif choice == '4':
+            print("\nExiting the Cold Email Automation System. Goodbye!")
+            break
+        
+        else:
+            print("\nInvalid choice. Please select a number between 1 and 4.")
+            
+
 
 if __name__ == '__main__':
     asyncio.run(main())

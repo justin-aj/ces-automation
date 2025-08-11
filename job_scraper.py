@@ -67,7 +67,7 @@ class JobScraper:
             job_content: Scraped text content from the job page
             
         Returns:
-            Dict containing job_name, job_description, company_name
+            Dict containing job_role, role_details, company_name
         """
         if not job_content:
             print("[ERROR] No content to extract from")
@@ -78,9 +78,14 @@ class JobScraper:
         prompt = f"""
         Extract the following information from this job posting content.
         Return ONLY a JSON object with these keys:
-        - job_name: The full title of the job position
+        - job_role: The full title of the job position
         - company_name: The name of the company
-        - job_description: A concise summary of the job description (max 150 words)
+        - role_details: A comprehensive summary of the job that includes:
+          1. Required technical skills and tech stack (programming languages, frameworks, tools)
+          2. Required qualifications (education, years of experience)
+          3. Key responsibilities
+          4. Any domain-specific knowledge required
+          5. Any unique or important requirements mentioned
         
         Here's the job posting content:
         {job_content[:10000]}  # Limit content length
@@ -147,7 +152,7 @@ class JobScraper:
                 # Skip if no job link
                 if not contact_info['job_link']:
                     print("[WARN] No job link found for this entry, skipping")
-                    results.append({**contact_info, 'job_name': '', 'company_name': '', 'job_description': '', 'scraped': False})
+                    results.append({**contact_info, 'job_role': '', 'company_name': '', 'role_details': '', 'scraped': False})
                     continue
                 
                 # Scrape job content
@@ -155,7 +160,7 @@ class JobScraper:
                 
                 if not job_content:
                     print("[WARN] Failed to scrape content, skipping")
-                    results.append({**contact_info, 'job_name': '', 'company_name': '', 'job_description': '', 'scraped': False})
+                    results.append({**contact_info, 'job_role': '', 'company_name': '', 'role_details': '', 'scraped': False})
                     continue
                 
                 # Extract job details
@@ -163,7 +168,7 @@ class JobScraper:
                 
                 if not job_details:
                     print("[WARN] Failed to extract job details, skipping")
-                    results.append({**contact_info, 'job_name': '', 'company_name': '', 'job_description': '', 'scraped': False})
+                    results.append({**contact_info, 'job_role': '', 'company_name': '', 'role_details': '', 'scraped': False})
                     continue
                 
                 # Combine information
@@ -179,9 +184,9 @@ class JobScraper:
                     'employer_role': row.get('employer_role', ''),
                     'email_id': row.get('email_id', ''),
                     'job_link': row.get('job_link', ''),
-                    'job_name': '',
+                    'job_role': '',
                     'company_name': '',
-                    'job_description': '',
+                    'role_details': '',
                     'scraped': False,
                     'error': str(e)
                 })

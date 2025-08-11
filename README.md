@@ -1,8 +1,14 @@
 # Cold Email Automation Project
 
-Last Updated: August 8, 2025
+Last Updated: August 9, 2025
 
 ## Latest Updates
+
+### Major Enhancements (August 9, 2025)
+1. **Job Scraping and Information Extraction**
+   - Added `job_scraper.py` to extract job details from URLs
+   - Integrated Crawl4AI API for web scraping
+   - Used Gemini AI to extract structured job data
 
 ### Major Enhancements (August 8, 2025)
 1. **AI-Powered Email Generation**
@@ -37,29 +43,40 @@ Last Updated: August 8, 2025
 - Error handling for API interactions
 
 ### Current Capabilities
+- Scrapes job details from job posting URLs
+- Extracts structured job information (title, company, description)
 - Creates personalized email drafts in Gmail
 - Supports multiple email templates
 - Personalizes recipient names from email addresses
 - Maintains OAuth tokens for persistent authentication
 - Handles batch processing of recipient lists
+- Provides interactive CLI for user workflow
 
 ### Technical Components
-- Uses Google Gmail API
+- Uses Google Gmail API for email integration
 - Implements OAuth2 authentication flow
+- Utilizes Crawl4AI API for web scraping
+- Leverages Gemini AI for content generation and information extraction
 - Stores credentials in `token.pickle` and `credentials.json`
-- Python-based implementation
+- Python-based implementation with pandas for data processing
+- Asynchronous operation for improved performance
 
 ### Usage
 The script currently supports:
-1. Creating draft emails for a list of recipients
-2. Using randomized templates for content variety
-3. Personalizing messages with recipient names
+1. Scraping job details from job posting URLs collected by Chrome extension
+2. Extracting structured job information using AI
+3. Creating personalized draft emails based on job details and your resume
 4. Storing drafts in Gmail for review before sending
+5. Processing jobs individually or in batches
+6. Interactive command-line interface for different workflows
 
 ### Required Files
-- `main.py`: Core implementation
+- `main.py`: Core implementation and CLI interface
+- `job_email_generator.py`: Email generation functionality
+- `job_scraper.py`: Job information extraction
 - `credentials.json`: Google API credentials (required)
 - `token.pickle`: OAuth token storage (auto-generated)
+- `.env`: Environment variables including API keys
 
 ### Required Setup
 
@@ -70,19 +87,27 @@ pip install google-auth-oauthlib google-auth-httplib2 google-api-python-client g
 
 2. **Configure API Credentials**
    - Place your `credentials.json` file (from Google Cloud Console) in the root directory
-   - Add your Gemini API key to `.env` file:
+   - Add your API keys to `.env` file:
    ```
-   GEMINI_API_KEY=your_api_key_here
+   GEMINI_API_KEY=your_gemini_api_key_here
+   CRAWL4AI_API_KEY=your_crawl4ai_api_key_here
    ```
 
 3. **Prepare Data Files**
-   - Create `sample_jobs.csv` with required columns:
-     - company_name
-     - job_role
+   - Option 1: Use Chrome extension to create `contacts.csv` with:
      - employer_name
      - employer_role
-     - role_details
      - email_id
+     - job_link
+   
+   - Option 2: Create `job_details.csv` directly with:
+     - company_name
+     - job_name or job_role
+     - employer_name
+     - employer_role
+     - email_id
+     - job_description
+   
    - Update your resume in `main.py`
 
 ### Next Steps
@@ -92,25 +117,36 @@ pip install google-auth-oauthlib google-auth-httplib2 google-api-python-client g
 - Enhance resume parsing capabilities
 - Add scheduling features for email sending
 - Implement A/B testing for email content
+- Improve web scraping robustness for more job sites
+- Add follow-up email scheduling
 
 ### File Structure
-- `main.py`: Main script with resume and execution logic
-- `job_email_generator.py`: Core email generation functionality
-- `sample_jobs.csv`: Job application details
+- `main.py`: Main script with interactive CLI and integration
+- `job_email_generator.py`: Email generation functionality
+- `job_scraper.py`: Job information extraction
+- `contacts.csv`: Job links and contact information
+- `job_details.csv`: Extracted job details
 - `credentials.json`: Google API credentials
 - `.env`: Environment variables and API keys
 
 ### Usage Instructions
 1. Set up all required credentials and files
 2. Update your resume in `main.py`
-3. Prepare your job applications in `sample_jobs.csv`
+3. Prepare your data files (either `contacts.csv` or `job_details.csv`)
 4. Run the script:
 ```bash
 python main.py
 ```
 
+5. Choose an option from the interactive menu:
+   - Option 1: Scrape job information from contacts CSV
+   - Option 2: Generate email drafts from job details CSV
+   - Option 3: Do both (scrape and generate emails)
+   - Option 4: Exit
+
 The system will:
-- Read and validate your job applications
+- Scrape job details from URLs in your contacts file (if selected)
+- Extract structured information using AI
 - Generate personalized emails using AI
 - Create drafts in your Gmail account
 - Provide detailed feedback on the process
