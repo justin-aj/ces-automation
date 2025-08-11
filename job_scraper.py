@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 """
 Job Scraper for extracting job details from job listing URLs.
 
@@ -5,6 +6,8 @@ This module provides a class to scrape job details from URLs using
 the Crawl4AI library and Google's Generative AI for text extraction.
 """
 
+=======
+>>>>>>> 2528dfc6424eafe34446b2b1bbdfceaac46a5ef6
 import os
 import json
 import re
@@ -272,4 +275,8 @@ async def main() -> None:
 
 if __name__ == "__main__":
     import asyncio
+<<<<<<< HEAD
     asyncio.run(main())
+=======
+    asyncio.run(main())
+>>>>>>> 2528dfc6424eafe34446b2b1bbdfceaac46a5ef6

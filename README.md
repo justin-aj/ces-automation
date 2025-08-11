@@ -45,9 +45,10 @@ pip install dagster dagster-webserver dagster-pandas openpyxl
 
 2. **Configure API Credentials**
    - Place your `credentials.json` file (from Google Cloud Console) in the root directory
-   - Add your Gemini API key to `.env` file:
+   - Add your API keys to `.env` file:
    ```
-   GEMINI_API_KEY=your_api_key_here
+   GEMINI_API_KEY=your_gemini_api_key_here
+   CRAWL4AI_API_KEY=your_crawl4ai_api_key_here
    ```
 
 3. **Prepare Data Files**

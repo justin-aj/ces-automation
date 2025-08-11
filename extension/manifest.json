@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
-  "name": "Job Application Data Collector",
-  "description": "Collect job application details for cold email automation",
+  "name": "Contact Details Collector",
+  "description": "Collect contact details for cold email automation",
   "version": "1.0",
   "permissions": ["storage", "downloads"],
   "action": {
