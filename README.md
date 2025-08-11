@@ -5,6 +5,10 @@ Last Updated: August 11, 2025
 ## Overview
 This project automates the cold email process for job applications using a Dagster workflow. It scrapes job details from links, generates personalized emails, creates Gmail drafts, and tracks the status of applications.
 
+## Workflow
+
+![alt text](image.png)
+
 ## Features
 - Job details scraping from provided links
 - Resume-based personalized email generation with AI
